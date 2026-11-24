@@ -30,9 +30,24 @@ def load(path, size):
 
 
 def wrap_text(draw, text, fnt, max_w):
-    """Greedy word wrap; returns a list of lines that fit max_w."""
+    """Greedy word wrap; returns a list of lines that fit max_w.
+
+    A single word wider than max_w is hard-split across lines so no
+    line can ever overflow the column it is drawn in.
+    """
     lines, cur = [], ""
     for word in text.split():
+        if draw.textlength(word, font=fnt) > max_w:
+            if cur:
+                lines.append(cur)
+                cur = ""
+            while draw.textlength(word, font=fnt) > max_w:
+                cut = len(word) - 1
+                while cut > 0 and draw.textlength(word[:cut], font=fnt) > max_w:
+                    cut -= 1
+                cut = max(cut, 1)
+                lines.append(word[:cut])
+                word = word[cut:]
         trial = (cur + " " + word).strip()
         if draw.textlength(trial, font=fnt) <= max_w:
             cur = trial
@@ -180,7 +195,7 @@ def main():
         "Trump: US will sink blockade runners.",
         # Latin America & Caribbean (7)
         "Lula backs second fiscal package.",
-        "Car bomb hits governor's office.",
+        "Car bomb hits governor's office in Colombia.",
         "Brazil's real weakens on growth cut.",
         "Maduro spends birthday behind bars.",
         "Nicaragua posts record $8.9bn exports.",
@@ -222,12 +237,12 @@ def main():
         "China probes Politburo member Chen.",
         "Huang returns to cheers in China.",
         "Kim ignores Trump's outreach.",
-        "India, China hold border talks.",
+        "India, China hold marathon border talks.",
         "US blacklists Alibaba unit.",
         "Second Chinese official probed.",
         # Southeast Asia & Oceania (7)
         "Solomons to end China security pact.",
-        "Australia–Vanuatu treaty blocked.",
+        "Australia–Vanuatu treaty blocked over climate.",
         "Fiji closes all schools as drought bites.",
         "Remote Pacific island evacuated.",
         "Pacific elders accuse Australia.",
@@ -261,7 +276,7 @@ def main():
     # ---- Footer ----
     d.line([(14, H - 26), (W - 14, H - 26)], fill=RULE, width=1)
     d.text((W // 2, H - 20),
-           "Stories first reported Tuesday 24 November 2026  •  Sources: Reuters, AP, CNN, WSJ, AFP, Al Jazeera",
+           "Stories first reported Tuesday 24 November 2026  •  Sources: Reuters, AP, CNN, WSJ, AFP, Al Jazeera  •  Photos: AI-generated illustrations",
            font=load(SANS, 11), fill=GREY, anchor="ma")
 
     out = os.path.join(HERE, "entry.png")
