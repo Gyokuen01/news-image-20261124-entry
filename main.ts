@@ -1,4 +1,4 @@
-// news-image-20261124 entry: copy the pre-composed front page to the
+// news-image-20261124 entry v2: copy the pre-composed front page to the
 // grader's output directory, byte for byte. No network, no randomness:
 // the same input file always produces the same output bytes.
 import { copyFileSync, mkdirSync } from "node:fs";
